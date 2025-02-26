@@ -19,3 +19,16 @@ function getPostTitle(id) {
 getPostTitle(1)
   .then((data) => console.log(data))
   .catch((error) => console.error(error));
+
+function getPost(id) {
+  const postUser = new Promise((resolve, reject) => {
+    fetch(`https://dummyjson.com/users/${id}`)
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+  return postUser;
+}
+getPost(1)
+  .then((data) => console.log(data))
+  .catch((error) => console.error(error));
