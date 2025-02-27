@@ -9,7 +9,7 @@ function getPostTitle(id) {
   const titlePost = new Promise((resolve, reject) => {
     fetch(`https://dummyjson.com/posts/${id}`)
       .then((response) => response.json())
-      .then((data) => resolve(data))
+      .then((post) => resolve(post.title))
       .catch(reject);
   });
 
@@ -17,20 +17,25 @@ function getPostTitle(id) {
 }
 
 getPostTitle(1)
-  .then((data) => console.log(data))
+  .then((title) => console.log(`Il titolo del post è ${title}`))
   .catch((error) => console.error(error));
 
+//! Bonus
 function getPost(id) {
-  const postUser = new Promise((resolve, reject) => {
-    fetch(`https://dummyjson.com/users/${id}`)
-      .then((response) => response.json())
-      .then((data) => resolve(data))
-      .catch(reject);
+  return new Promise((resolve, reject) => {
+    fetch(`https://dummyjson.com/posts/${id}`)
+      .then((res) => res.json())
+      .then((post) => {
+        fetch(`https://dummyjson.com/users/${post.userId}`)
+          .then((res) => res.json())
+          .then((user) => resolve({ ...post, user }))
+          .catch(reject);
+      });
   });
-  return postUser;
 }
+
 getPost(1)
-  .then((data) => console.log(data))
+  .then((post) => console.log("Post completo", post))
   .catch((error) => console.error(error));
 
 //! Snack 2
@@ -42,7 +47,7 @@ Bonus: HOF con closure per memorizzare l'ultimo lancio
 
 Modifica la funzione in creaLanciaDado(), che restituisce una closure che memorizza l'ultimo risultato. Se il numero esce due volte di fila, stampa "Incredibile!". */
 
-function lanciaDado() {
+function creaLanciaDado() {
   const numeroDado = new Promise((resolve, reject) => {
     setTimeout(() => {
       const probablyFail = Math.random();
@@ -55,9 +60,15 @@ function lanciaDado() {
       }
     }, 3000);
   });
-  return numeroDado;
+  return function () {
+    const result1 = numeroDado;
+    const result2 = numeroDado;
+    if (result1 === result2) {
+      console.log("Incredibile!");
+    }
+  };
 }
 
-lanciaDado()
-  .then((messaggio) => console.log(messaggio))
-  .catch((error) => console.error(error));
+creaLanciaDado();
+// .then((result) => console.log(result))
+// .catch((error) => console.error(error));
